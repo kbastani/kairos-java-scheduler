@@ -7,10 +7,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * A resource is an immutable container of items that incrementally returns a subset of the initial buffer. This
- * resource is safe for concurrent transactions.
+ * A {@link Resource} is an immutable container of items that incrementally returns a subset of the initial buffer and
+ * is safe for concurrent transactions.
  *
- * @param <T> is the type of resource
+ * @param <T> is the type of {@link Resource}
  */
 public class Resource<T> {
 
@@ -32,12 +32,9 @@ public class Resource<T> {
         this.position = position;
         this.buffer = buffer;
 
-        if (size > 0) {
-        } else {
-            if (size == 0) {
-                if (Objects.equals(position, size)) {
-                    state = ResourceState.EXHAUSTED;
-                }
+        if (size == 0) {
+            if (Objects.equals(position, size)) {
+                state = ResourceState.EXHAUSTED;
             }
         }
     }
@@ -91,20 +88,21 @@ public class Resource<T> {
         if (state == ResourceState.FULL) {
             // Load resource from source function
             buffer = fetchBuffer.apply(null);
-            if(size == -1)
-            	size = buffer.length;
+            if (size == -1)
+                size = buffer.length;
             state = ResourceState.NOT_EMPTY;
         }
 
         int end = Math.min(position + limit, size);
         int start = position;
         position = end;
+
         result = Arrays.stream(Arrays.copyOfRange(buffer, start, position))
                 .collect(Collectors.toCollection(ArrayList::new));
 
         if (position >= size) {
             state = ResourceState.EXHAUSTED;
-        } else if (position > 0 && position < size) {
+        } else if (position > 0) {
             state = ResourceState.NOT_EMPTY;
         }
 

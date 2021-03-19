@@ -63,7 +63,6 @@ public class Order<T> {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(id);
     }
 }

@@ -6,27 +6,24 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 
 /**
- * A track is a lazily-loaded infinite stream of {@link Cart}s that are scheduled on the track.
- * The track is stream repository that marshals commitments back and forth between a data store. When a
- * {@link Cart} is delivered, the contents of the resources inside the cart are unpacked into a stream
- * of streams. The result of this stream of streams can be subscribed to by a function that applies
- * aggregate transformations.
+ * A track is a lazily-loaded infinite stream of {@link Cart}s that are scheduled on a {@link Track}.
+ * The {@link Track} is {@link StreamingRepository} that marshals commitments back and forth between a data store.
+ * When a {@link Cart} is delivered, the contents of the {@link Resource}s inside the cart are unpacked into a stream
+ * of streams. The result of this stream of streams can be subscribed to by a function that applies aggregate
+ * transformations.
  */
 public class Track<T> {
 
-    private boolean lazy = false;
     private ExpandingResource<Cart<T>, T> log;
     private Long position = 0L;
     private Long maxPosition = 0L;
     private Integer orders = 0;
 
-    public Track(boolean lazy, ExpandingResource<Cart<T>, T> log) {
-        this.lazy = lazy;
+    public Track(ExpandingResource<Cart<T>, T> log) {
         this.log = log;
     }
 
     public void schedule(Order<T> order) {
-
         if (order.getState() == ResourceState.FULL) {
             orders++;
             // Make sure that the delivery time is in the future
@@ -44,7 +41,6 @@ public class Track<T> {
         cart.commit(order);
         log.getRepository().save(cart);
         //maxPosition = maxPosition < order.getDeliveryTime() ? order.getDeliveryTime() : maxPosition;
-
     }
 
     public ArrayList<ArrayList<T>> deliver() {
@@ -79,7 +75,6 @@ public class Track<T> {
             log.getRepository().remove(item.getId());
             position++;
         }
-
 
         return result;
     }

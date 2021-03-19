@@ -5,11 +5,9 @@ package scheduler;
  * vendors to schedule deliveries in any chronological order.
  */
 public class Scheduler {
-
     private Track track;
 
     public Scheduler(Track track) {
         this.track = track;
     }
-
 }

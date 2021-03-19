@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.stream.Stream;
 
 /**
- * A cart is an equally sized block of resources that can commit to orders. When a cart is delivered to a track,
- * the resources inside the cart are unpacked in a stream of
+ * A cart is an equally sized block of resources that can commit to {@link Order}. When a cart is delivered to a
+ * {@link Track}, the resources inside the {@link Cart} are unpacked in a stream of
  *
  * @param <T>
  */
@@ -14,7 +14,7 @@ public class Cart<T> {
 
     public static final Integer SIZE = Constants.FRAME_SIZE;
     private Long id;
-    private List<Order<T>> orders;
+    private final List<Order<T>> orders;
 
     public Cart() {
         this.orders = new ArrayList<>();

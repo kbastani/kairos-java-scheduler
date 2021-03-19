@@ -78,7 +78,7 @@ public class ExpandingResource<T, V> extends Resource<T> {
                     .peek(expandingBuffer::remove)
                     .collect(Collectors.toCollection(ArrayList::new));
 
-            if (Objects.equals(position, size))
+            if (Objects.equals(position.get(), size))
                 state = ResourceState.EXHAUSTED;
         }
         return result;

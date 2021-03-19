@@ -26,19 +26,18 @@ public class ExpandingResourceTest {
         Cart<Integer>[] carts = new Cart[]{};
         ExpandingResource<Cart<Integer>, Integer> resource = new ExpandingResource<Cart<Integer>, Integer>(0, 0, carts, (i) -> {
             Cart<Integer> result = new Cart<Integer>(i);
-            Order<Integer> order = new Order(i, new Resource<Integer>(3, 0, new Integer[]{1, 1, 1}));
+            Order<Integer> order = new Order<>(i, new Resource<Integer>(3, 0, new Integer[]{1, 1, 1}));
             result.commit(order);
             return result;
         }, repository);
 
-        LongStream.range(0L, 40L)
-                .forEach(i -> {
-                    //System.out.println(.deliver());
-                    Cart<Integer> item = (Cart<Integer>) Stream.of(resource.take(1).toArray()).findFirst().get();
-                    //Arrays.toString(result[0].deliver().toArray(Integer[]::new));
-                    String result = item.deliver().map(x -> Arrays.toString((x.toArray()))).collect(Collectors.joining(","));
-                    System.out.println(item.getId() + ": " + result);
-                });
+        LongStream.range(0L, 40L).forEach(i -> {
+            //System.out.println(.deliver());
+            Cart<Integer> item = (Cart<Integer>) Stream.of(resource.take(1).toArray()).findFirst().get();
+            //Arrays.toString(result[0].deliver().toArray(Integer[]::new));
+            String result = item.deliver().map(x -> Arrays.toString((x.toArray()))).collect(Collectors.joining(","));
+            System.out.println(item.getId() + ": " + result);
+        });
 
     }
 

@@ -55,7 +55,7 @@ public class ExpandingResource<T, V> extends Resource<T> {
     public ArrayList<T> take(Integer limit) {
         ArrayList<T> result;
         synchronized (this) {
-            int overflow = Math.max(0, (position + limit) - size);
+            int overflow = Math.max(0, (position.get() + limit) - size);
 
             if (overflow > 0) {
                 // Expand the buffer
@@ -69,9 +69,9 @@ public class ExpandingResource<T, V> extends Resource<T> {
                 size += overflow;
             }
 
-            int end = Math.min(position + limit, size);
-            int start = position;
-            position = end;
+            int end = Math.min(position.get() + limit, size);
+            int start = position.get();
+            position.set(end);
 
             result = IntStream.range(start, end)
                     .mapToObj(i -> expandingBuffer.get(i - start))

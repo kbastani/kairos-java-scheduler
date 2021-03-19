@@ -3,6 +3,7 @@ package scheduler;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 public class Resource<T> {
 
     protected Integer size;
-    protected Integer position;
+    protected final AtomicInteger position = new AtomicInteger();
     protected T[] buffer;
     protected ResourceState state;
     protected Function<Void, T[]> fetchBuffer = (a) -> buffer;
@@ -29,7 +30,7 @@ public class Resource<T> {
         state = ResourceState.FULL;
 
         this.size = size;
-        this.position = position;
+        this.position.set(position);
         this.buffer = buffer;
 
         if (size == 0) {
@@ -69,7 +70,7 @@ public class Resource<T> {
      * @return the position
      */
     public Integer getPosition() {
-        return position;
+        return position.get();
     }
 
     public T[] getBuffer() {
@@ -93,19 +94,21 @@ public class Resource<T> {
             state = ResourceState.NOT_EMPTY;
         }
 
-        int end = Math.min(position + limit, size);
-        int start = position;
-        position = end;
+        synchronized (position) {
+            int end = Math.min(position.get() + limit, size);
+            int start = position.get();
+            position.set(end);
 
-        result = Arrays.stream(Arrays.copyOfRange(buffer, start, position))
-                .collect(Collectors.toCollection(ArrayList::new));
 
-        if (position >= size) {
-            state = ResourceState.EXHAUSTED;
-        } else if (position > 0) {
-            state = ResourceState.NOT_EMPTY;
+            result = Arrays.stream(Arrays.copyOfRange(buffer, start, position.get()))
+                    .collect(Collectors.toCollection(ArrayList::new));
+
+            if (position.get() >= size) {
+                state = ResourceState.EXHAUSTED;
+            } else if (position.get() > 0) {
+                state = ResourceState.NOT_EMPTY;
+            }
         }
-
         return result;
     }
 

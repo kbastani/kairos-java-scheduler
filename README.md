@@ -20,7 +20,11 @@ When I finally got around to the music part, I had a problem, and it had to do w
 
 No human will ever be able to sit around long enough to observe and record a musical note for every dying star. Even if this were the case, each musical note would be so distant in time, that no rhythm and melody could ever be heard. This is also true when you speed things up, like in a scaled-down simulation for instance. 
 
-To hear any music, each and every note needs to be scheduled any played sequentially (Chronos) while sounding at the opportune time (Kairos). If the notes sound too slowly or too quickly, the vibrations either blend together or not at all. Either way, without Chronos and Kairos, there's no way to transform data into music.
+To hear any music, each and every note needs to be scheduled and played sequentially (_Chronos_) while sounding at the opportune time (_Kairos_). If the notes sound too slowly or too quickly, the vibrations either blend together or not at all. Either way, without _Chronos and Kairos_, there's no way to transform data into anything resembling music.
+
+This is why I created Kairos—a JDK-based scheduler API—which I then used to generate [musical compositions](https://soundcloud.com/kenny-bastani/unsupervised-ml-classic-piano-improv-1) based on the idea of stars making music.
+
+_The scheduler is designed for far more than just music, which is why I wanted to open source it._
 
 ## Work-in-progress
 

@@ -1,7 +1,6 @@
 package scheduler;
 
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 
@@ -51,13 +50,13 @@ public class Track<T> {
                     .stream().collect(Collectors.toUnmodifiableList()));
             Cart<T> item = results.poll();
 
-            synchronized (Objects.requireNonNull(item)) {
+            //synchronized (Objects.requireNonNull(item)) {
                 try {
                     result = item.deliver().collect(Collectors.toCollection(ArrayList::new));
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-            }
+            //}
 
             // Overflow order resources to the next cart until the resource state is exhausted
             item.getOrders().stream().collect(Collectors.toUnmodifiableList()).forEach(o -> {

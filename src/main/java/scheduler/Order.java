@@ -72,4 +72,14 @@ public class Order<T> {
         result = 31 * result + (state != null ? state.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", deliveryTime=" + deliveryTime +
+                ", resource=" + resource +
+                ", state=" + state +
+                '}';
+    }
 }

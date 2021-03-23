@@ -1,12 +1,12 @@
 package scheduler;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
 public class TrackTest {
@@ -14,24 +14,24 @@ public class TrackTest {
     public void blockingTrackDeliveryTest() throws Exception {
         SignalRepository signalRepository = new SignalRepository();
 
-        Cart<Double>[] carts = new Cart[]{};
-        ExpandingResource<Cart<Double>, Double> resource =
+        Cart<Integer>[] carts = new Cart[]{};
+        ExpandingResource<Cart<Integer>, Integer> resource =
                 new ExpandingResource<>(carts, Cart::new, signalRepository);
 
-        Track<Double> track = new Track<>(resource);
+        Track<Integer> track = new Track<>(resource);
 
         // Creates a single-threaded track that delivers four orders over two seconds
-        List<Order<Double>> orders = DoubleStream.of(1.0, 2.0, 3.0, 4.0)
+        List<Order<Integer>> orders = IntStream.of(1, 2, 3, 4)
                 .mapToObj(k -> {
-                    Resource<Double> r = Resource.of(k);
-                    return new Order<>((long) r.hashCode(), ((Math.round(k)) * 5L), r);
+                    Resource<Integer> r = Resource.of(k);
+                    return new Order<>((long) r.hashCode(), k * 5L, r);
                 }).collect(Collectors.toList());
 
         orders.forEach(track::schedule);
 
         while (!track.isEmpty()) {
             System.out.println(Arrays.toString(track.deliver().stream().flatMap(Collection::stream)
-                    .collect(Collectors.toList()).toArray(Double[]::new)));
+                    .collect(Collectors.toList()).toArray(Integer[]::new)));
             Thread.sleep(100);
         }
     }
@@ -41,48 +41,45 @@ public class TrackTest {
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         SignalRepository signalRepository = new SignalRepository();
 
-        Cart<Double>[] carts = new Cart[]{};
-        ExpandingResource<Cart<Double>, Double> resource =
+        Cart<Integer>[] carts = new Cart[]{};
+        ExpandingResource<Cart<Integer>, Integer> resource =
                 new ExpandingResource<>(carts, Cart::new, signalRepository);
 
-        Track<Double> track = new Track<>(resource);
+        Track<Integer> track = new Track<>(resource);
 
         // Creates a single-threaded track that delivers four orders over two seconds
-        List<Order<Double>> orders = DoubleStream.of(1.0, 2.0, 3.0, 4.0)
+        List<Order<Integer>> orders = IntStream.of(1, 2, 3, 4)
                 .mapToObj(k -> {
-                    Resource<Double> r = Resource.of(k);
-                    return new Order<>((long) r.hashCode(), ((Math.round(k))), r);
+                    Resource<Integer> r = Resource.of(k);
+                    return new Order<>((long) r.hashCode(), (long) k, r);
                 }).collect(Collectors.toList());
 
         orders.forEach(track::schedule);
 
         while (!track.isEmpty()) {
-            long frame = Math.round(track.deliver().stream().flatMap(Collection::stream).findFirst()
-                    .orElse(0.0));
-            executor.schedule(() -> {
-                System.out.println(frame);
-            }, frame * 500, TimeUnit.MILLISECONDS);
+            long frame = Math.round(track.deliver().stream().flatMap(Collection::stream).findFirst().orElse(0));
+            executor.schedule(() -> System.out.println(frame), frame * 500, TimeUnit.MILLISECONDS);
         }
 
         Thread.sleep(2500);
     }
 
-    class SignalRepository implements StreamingRepository<Cart<Double>, Double> {
+    static class SignalRepository implements StreamingRepository<Cart<Integer>, Integer> {
 
-        private final Map<Long, Cart<Double>> repo = new HashMap<>();
+        private final Map<Long, Cart<Integer>> repo = new HashMap<>();
 
         @Override
-        public Cart<Double> getById(Long id) {
+        public Cart<Integer> getById(Long id) {
             return repo.get(id);
         }
 
         @Override
-        public void save(Cart<Double> item) {
+        public void save(Cart<Integer> item) {
             repo.put(item.getId(), item);
         }
 
         @Override
-        public Order<Double> saveOrder(Order<Double> order) {
+        public Order<Integer> saveOrder(Order<Integer> order) {
             return order;
         }
 

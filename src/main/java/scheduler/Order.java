@@ -1,7 +1,5 @@
 package scheduler;
 
-import java.util.Objects;
-
 /**
  * An order is a container of a variable-length resource that has been committed to a sequence of {@link Cart}s.
  */
@@ -57,12 +55,21 @@ public class Order<T> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Order<?> order = (Order<?>) o;
-        return Objects.equals(id, order.id);
+
+        if (id != null ? !id.equals(order.id) : order.id != null) return false;
+        if (deliveryTime != null ? !deliveryTime.equals(order.deliveryTime) : order.deliveryTime != null) return false;
+        if (resource != null ? !resource.equals(order.resource) : order.resource != null) return false;
+        return state == order.state;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (deliveryTime != null ? deliveryTime.hashCode() : 0);
+        result = 31 * result + (resource != null ? resource.hashCode() : 0);
+        result = 31 * result + (state != null ? state.hashCode() : 0);
+        return result;
     }
 }

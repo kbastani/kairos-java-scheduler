@@ -26,6 +26,7 @@ public class ResourceTest {
         Resource<Integer> resource = new Resource<>(10, 0, IntStream.range(0, 10).boxed()
                 .toArray(Integer[]::new));
         ExecutorService executor = Executors.newFixedThreadPool(10);
+
         final ConcurrentLinkedQueue<Integer> buffer = new ConcurrentLinkedQueue<>();
         List<Callable<Boolean>> invocations = new ArrayList<>();
 
